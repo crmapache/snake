@@ -1,6 +1,5 @@
 import Interface        from '@/js/layout/Interface';
 import Sound            from '@/js/layout/Sound';
-import Calculator       from '@snake/Calculator';
 import Field            from '@snake/Field';
 import Bonus            from '@snake/Bonus';
 import Player           from '@snake/Player';
@@ -9,10 +8,9 @@ import {randomLauncher} from '@/js/helpers';
 
 export default class Game {
   constructor() {
-    this.interface  = new Interface(this);
-    this.calculator = new Calculator(this);
-    this.field      = new Field(this);
-    this.sound      = new Sound();
+    this.interface = new Interface(this);
+    this.field     = new Field(this);
+    this.sound     = new Sound();
     
     this.players    = [];
     this.difficulty = 7;
@@ -99,10 +97,10 @@ export default class Game {
   }
   
   getRabbitsFrequency() {
-    return [10000 / this.difficulty, 20000 / this.difficulty];
+    return [15000 / this.difficulty, 25000 / this.difficulty];
   }
   
   getBonusFrequency() {
-    return [100000 / this.difficulty, 200000 / this.difficulty];
+    return [40000 / this.difficulty, 70000 / this.difficulty];
   }
 }

@@ -15,12 +15,20 @@ export default class Sound {
     });
     
     this.rabbitEaten = new Howl({
-      src: ['sounds/rabbitEaten.mp3']
+      src: ['sounds/rabbit-eaten.mp3']
     });
     
     this.snakesCollision = new Howl({
-      src:    ['sounds/snakesCollision.mp3'],
+      src:    ['sounds/snakes-collision.mp3'],
       volume: 1,
+    });
+    
+    this.getBonus = new Howl({
+      src: ['sounds/get-bonus.mp3'],
+    });
+    
+    this.bonusEnd = new Howl({
+      src: ['sounds/bonus-end.mp3'],
     });
   }
   

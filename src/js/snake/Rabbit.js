@@ -18,16 +18,15 @@ export default class Rabbit {
         targets:       this,
         health:        this.health - percents(this.health, 10),
         nutritionally: percents(nutritionally, this.health),
-        round:         1,
         duration:      700,
         easing:        'easeOutExpo',
+        complete:      () => {
+          if (this.health <= 10) {
+            this.destroy();
+          }
+        }
       });
       
-      this.health -= percents(this.health, 10);
-      this.nutritionally = percents(nutritionally, this.health);
-      if (this.health < 1) {
-        this.destroy();
-      }
     }, 900);
   }
   

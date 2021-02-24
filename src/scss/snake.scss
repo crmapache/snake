@@ -275,7 +275,7 @@ body {
         top:      0;
         left:     0;
         right:    0;
-        height:   70px;
+        height:   96px;
 
         .player {
           @include flex();
@@ -301,10 +301,24 @@ body {
           }
 
           .bonuses-wrap {
+            @include flex();
             height: 30px;
 
             .bonus {
+              @include flex();
+              width:     14px;
+              height:    14px;
+              margin:    0 2.5px;
+              font-size: 8px;
+              color:     #000;
 
+              @each $key, $color in $bonuses {
+                @for $i from 1 through 5 {
+                  &.bonus-#{$key}-#{$i} {
+                    background-color: darken($color, 10% * $i);
+                  }
+                }
+              }
             }
           }
 
@@ -323,7 +337,7 @@ body {
       }
 
       .field {
-        box-shadow: 0 0 2px rgba(255, 255, 255, .5);
+        box-shadow: 0 0 2px rgba(255, 255, 255, .3);
 
         .row {
           @include flex();
@@ -331,7 +345,7 @@ body {
           .cell {
             width:      20px;
             height:     20px;
-            box-shadow: inset 0 0 2px rgba(255, 255, 255, .5);
+            box-shadow: inset 0 0 2px rgba(255, 255, 255, .15);
             position:   relative;
 
             .cell-inner {
@@ -347,12 +361,24 @@ body {
               @each $i, $color in $players {
                 &.snake-#{$i} {
                   background-color: $color;
+
+                  &.transparent {
+                    background-color: transparentize($color, .5);
+                  }
                 }
               }
 
               @for $i from 1 through 5 {
                 &.rabbit-#{$i} {
                   background-color: darken($rabbit, 10% * $i);
+                }
+              }
+
+              @each $key, $color in $bonuses {
+                @for $i from 1 through 5 {
+                  &.bonus-#{$key}-#{$i} {
+                    background-color: darken($color, 10% * $i);
+                  }
                 }
               }
             }

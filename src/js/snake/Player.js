@@ -7,6 +7,16 @@ export default class Player {
     this.gameClass = gameClass;
     this.id        = id;
     
+    this.wrapEl        = null;
+    this.scoreEl       = null;
+    this.picksEl       = null;
+    this.bonusesWrapEl = null;
+    
+    this._score = 0;
+    this._picks = 0;
+    
+    this.bonuses = {};
+    
     this.controlKeys = ({
       1: [87, 68, 83, 65],
       2: [85, 75, 74, 72],
@@ -16,13 +26,6 @@ export default class Player {
     this.snake = new Snake(this);
     this.gameClass.field.setSnake(this.snake);
   }
-  
-  wrapEl  = null;
-  scoreEl = null;
-  picksEl = null;
-  
-  _score = 0;
-  _picks = 0;
   
   get score() {
     return this._score;
@@ -74,19 +77,76 @@ export default class Player {
     this.picksEl.classList.add('picks');
     this.picksEl.innerText = this.picks;
     
-    const bonusesWrap = document.createElement('div');
-    bonusesWrap.classList.add('bonuses-wrap');
+    this.bonusesWrapEl = document.createElement('div');
+    this.bonusesWrapEl.classList.add('bonuses-wrap');
     
     player.append(this.scoreEl);
     player.append(this.picksEl);
+    player.append(this.bonusesWrapEl);
     
     this.wrapEl.append(player);
-    this.wrapEl.append(bonusesWrap);
   }
   
   increaceScore(score) {
+    const scoreBonus = this.bonuses['score'];
+    console.log(score);
+    if (scoreBonus) {
+      score *= scoreBonus.level + 1;
+    }
+    console.log(score);
     this.score += score;
     this.picks++;
+  }
+  
+  addBonus(bonus) {
+    const transparencyBonusEndHandler = () => {
+      this.snake.transparency = false;
+    };
+    
+    if (
+        !this.bonuses[bonus.type] ||
+        (this.bonuses[bonus.type] && this.bonuses[bonus.type].level <= bonus.level)
+    ) {
+      bonus.get();
+      this.gameClass.sound.play('getBonus');
+      
+      if (this.bonuses[bonus.type]) {
+        if (bonus.type === 'transparency') {
+          transparencyBonusEndHandler();
+        }
+        
+        this.bonuses[bonus.type].stop();
+      }
+      
+      bonus.endHandler = () => {
+        this.gameClass.sound.play('bonusEnd');
+        
+        if (bonus.type === 'transparency') {
+          transparencyBonusEndHandler();
+        }
+        
+        delete this.bonuses[bonus.type];
+      };
+      
+      if (bonus.type === 'transparency') {
+        this.snake.transparency = true;
+      }
+      
+      if (bonus.type === 'cut') {
+        bonus.tickHandler = () => {
+          if (this.snake.cells.length > this.snake.initialSize) {
+            const lastSnakeCell = this.snake.cells.pop();
+            const fieldCell     = this.gameClass.field.cells[key(lastSnakeCell.x, lastSnakeCell.y)];
+            
+            if (fieldCell) {
+              fieldCell.snake = null;
+            }
+          }
+        };
+      }
+      
+      this.bonuses[bonus.type] = bonus;
+    }
   }
   
   destroy() {

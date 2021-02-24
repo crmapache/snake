@@ -60,12 +60,31 @@ export default class Field {
         
         if (snake) {
           cellInner.classList.add('snake-' + snake.id);
+          
+          if (snake.transparency) {
+            cellInner.classList.add('transparent');
+          }
         } else if (rabbit) {
           cellInner.classList.add('rabbit-' + rabbit.level);
           cellInner.innerText = Math.floor(rabbit.health);
         } else if (bonus) {
-        
+          cellInner.classList.add('bonus-' + bonus.type + '-' + bonus.level);
         }
+      }
+    }
+    
+    for (let player of this.gameClass.players) {
+      player.bonusesWrapEl.innerHTML = '';
+      
+      for (let bonusKey in player.bonuses) {
+        const type    = player.bonuses[bonusKey].type;
+        const level   = player.bonuses[bonusKey].level;
+        const counter = player.bonuses[bonusKey].lifeTimerCounter;
+        
+        const bonus = document.createElement('div');
+        bonus.classList.add('bonus', 'bonus-' + type + '-' + level);
+        bonus.innerText = counter;
+        player.bonusesWrapEl.append(bonus);
       }
     }
   }
@@ -114,7 +133,7 @@ export default class Field {
   }
   
   spewRabbit() {
-    let level    = this.chooseLevel(1, 5);
+    let level    = this.chooseLevel(1, 5, 100);
     const cell   = this.getFreeCell();
     const rabbit = new Rabbit(level, cell);
     
@@ -122,24 +141,42 @@ export default class Field {
   }
   
   spewBonus() {
-    let level = this.chooseLevel(1, 5);
+    const getBonusName = () => {
+      const bonusTypes = [
+        {name: 'freeze', range: [1, 1]},
+        {name: 'transparency', range: [2, 10]},
+        {name: 'cut', range: [1, 20]},
+        {name: 'score', range: [21, 100]},
+      ];
+      
+      let name = null;
+      
+      const typeRangeValue = random(1, 100);
+      
+      for (let bonusType of bonusTypes) {
+        if (typeRangeValue >= bonusType.range[0] && typeRangeValue <= bonusType.range[1]) {
+          name = bonusType.name;
+        }
+      }
+      return name;
+    };
     
-    let type = '';
+    const cell = this.getFreeCell();
     
-    const cell  = this.getFreeCell();
-    const bonus = new Bonus(level, cell, type);
+    let level   = this.chooseLevel(1, 5, 50);
+    const bonus = new Bonus(getBonusName(), level, cell);
     
-    cell.rabbit = rabbit;
+    cell.bonus = bonus;
   }
   
-  chooseLevel(level, topLevel) {
-    const isUp = random(1, (100 * level) / this.gameClass.difficulty) === 1;
+  chooseLevel(level, topLevel, n) {
+    const isUp = random(1, (n * level) / this.gameClass.difficulty) === 1;
     
     if (level === topLevel || !isUp) {
       return level;
     }
     
-    return this.chooseLevel(level + 1, topLevel);
+    return this.chooseLevel(level + 1, topLevel, n);
   };
   
   getFreeCell() {

@@ -11,8 +11,20 @@ $difficulty-to:   #ff5722;
 
 $rabbit:          #ffab91;
 
+$freeze:          #b0bec5;
+$transparency:    #f48fb1;
+$cut:             #fff59d;
+$score:           #a5d6a7;
+
 $players:         (
                     1: $green,
                     2: $orange,
                     3: $blue,
-                  )
+                  );
+
+$bonuses:         (
+                    freeze: $freeze,
+                    transparency: $transparency,
+                    cut: $cut,
+                    score: $score,
+                  );

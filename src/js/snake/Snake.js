@@ -10,6 +10,10 @@ export default class Snake {
     this.cells       = [];
     this.direction   = null;
     
+    this.transparency = false;
+    
+    this.directionLocked = false;
+    
     this.bodyKeydownHandler = this.bodyKeydownHandler.bind(this);
     
     document.querySelector('body').addEventListener('keydown', this.bodyKeydownHandler);
@@ -136,7 +140,13 @@ export default class Snake {
     };
     
     const isSnakesCollided = (x, y) => {
-      return this.gameClass.field.cells[key(x, y)].snake !== null;
+      const snake = this.gameClass.field.cells[key(x, y)].snake;
+      
+      if (!snake || this.transparency || (snake && snake.transparency)) {
+        return false;
+      }
+      
+      return true;
     };
     
     const isRabbitEaten = (x, y) => {
@@ -150,9 +160,43 @@ export default class Snake {
       return false;
     };
     
+    const isSnakeGotBonus = (x, y) => {
+      if (this.gameClass.field.cells[key(x, y)].bonus !== null) {
+        const bonus = this.gameClass.field.cells[key(x, y)].bonus;
+        
+        this.playerClass.addBonus(bonus);
+        bonus.removeFromField();
+        return true;
+      }
+      
+      return false;
+    };
+    
+    const isBonusActive = bonusName => {
+      const bonuses = this.playerClass.bonuses;
+      
+      for (let key in bonuses) {
+        if (key === bonusName) {
+          return bonuses[bonusName];
+        }
+      }
+      
+      return false;
+    };
+    
+    const freezeBonus       = isBonusActive('freeze');
+    const transparencyBonus = isBonusActive('transparency');
+    const cutBonus          = isBonusActive('cut');
+    const scoreBonus        = isBonusActive('score');
+    
+    if (freezeBonus) {
+      return true;
+    }
+    
     const [x, y]          = defineHeadPositions();
     const snakesCollision = isSnakesCollided(x, y);
     const snakeAte        = isRabbitEaten(x, y);
+    const snakeGotBonus   = isSnakeGotBonus(x, y);
     
     const newSnakeCells = defineNewSnakeCells(x, y, snakeAte);
     updateFieldCells(newSnakeCells);
@@ -167,29 +211,37 @@ export default class Snake {
       this.gameClass.sound.play('snakesCollision');
     }
     
+    this.directionLocked = false;
+    
     return !snakesCollision;
   }
   
   changeDirection(e, codes) {
     if (e.keyCode === codes[0] && !['top', 'bottom'].includes(this.direction)) {
-      this.direction = 'top';
+      this.directionLocked = true;
+      this.direction       = 'top';
     }
     
     if (e.keyCode === codes[1] && !['right', 'left'].includes(this.direction)) {
-      this.direction = 'right';
+      this.directionLocked = true;
+      this.direction       = 'right';
     }
     
     if (e.keyCode === codes[2] && !['top', 'bottom'].includes(this.direction)) {
-      this.direction = 'bottom';
+      this.directionLocked = true;
+      this.direction       = 'bottom';
     }
     
     if (e.keyCode === codes[3] && !['right', 'left'].includes(this.direction)) {
-      this.direction = 'left';
+      this.directionLocked = true;
+      this.direction       = 'left';
     }
   }
   
   bodyKeydownHandler(e) {
-    this.changeDirection(e, this.playerClass.controlKeys);
+    if (!this.directionLocked) {
+      this.changeDirection(e, this.playerClass.controlKeys);
+    }
   }
   
   destroy() {
