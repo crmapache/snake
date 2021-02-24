@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>Snake | Максим Золотой</title>
+</head>
+<body>
+  <div id="app">
+    <div class="menu" id="menu">
+      <div class="players-wrap">
+        <div class="player-wrap">
+          <div class="cell" id="player-1"></div>
+          <div class="buttons">
+            <div class="buttons-row">
+              <div class="button">W</div>
+            </div>
+            <div class="buttons-row">
+              <div class="button">A</div>
+              <div class="button">S</div>
+              <div class="button">D</div>
+            </div>
+          </div>
+        </div>
+        <div class="player-wrap">
+          <div class="cell" id="player-2"></div>
+          <div class="buttons">
+            <div class="buttons-row">
+              <div class="button">U</div>
+            </div>
+            <div class="buttons-row">
+              <div class="button">H</div>
+              <div class="button">J</div>
+              <div class="button">K</div>
+            </div>
+          </div>
+        </div>
+        <div class="player-wrap">
+          <div class="cell" id="player-3"></div>
+          <div class="buttons">
+            <div class="buttons-row">
+              <div class="button">↑</div>
+            </div>
+            <div class="buttons-row">
+              <div class="button">←</div>
+              <div class="button">↓</div>
+              <div class="button">→</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="space-info-wrap">
+        <div class="space-button">info/pause</div>
+      </div>
+      <div class="choose-difficulty-wrap" id="choose-difficulty-wrap"></div>
+      <div class="menu-start-button-wrap">
+        <div class="menu-start-button disabled" id="menu-start-button">start</div>
+      </div>
+    </div>
+    <div class="game" id="game">
+      <div class="field-wrap">
+        <div class="players-wrap" id="players-wrap"></div>
+        <div class="field" id="field"></div>
+      </div>
+    </div>
+    <div class="pause-menu" id="pause-menu"></div>
+    <div class="screen-warning" id="screen-warning">
+      Экран данного устройства слишком мал. Для игры необходимо устройство с разрешением не менее
+      1000 x 800.
+    </div>
+  </div>
+</body>
+</html>
