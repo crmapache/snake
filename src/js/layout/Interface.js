@@ -47,9 +47,6 @@ export default class Interface {
     
     this.game.addToDeactivate(this.menu);
     
-    this.screenWarning.addToDeactivate(this.game);
-    this.screenWarning.addToDeactivate(this.menu);
-    
     this.checkScreen = this.checkScreen.bind(this);
     
     this.playersChoosed = false;
