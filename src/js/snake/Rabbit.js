@@ -1,4 +1,5 @@
 import {percents} from '@/js/helpers';
+import constants  from '@/js/constants';
 import anime      from 'animejs';
 
 export default class Rabbit {
@@ -6,8 +7,8 @@ export default class Rabbit {
     this.level = level;
     this.cell  = cell;
     
-    this.health        = 99.999999;
-    this.nutritionally = 500 * this.level * 2;
+    this.health        = constants.RABBIT_MAX_HEALTH;
+    this.nutritionally = constants.RABBIT_NUTRITIONALLY * (this.level * 2);
     
     const nutritionally = this.nutritionally;
     
@@ -21,7 +22,7 @@ export default class Rabbit {
         duration:      700,
         easing:        'easeOutExpo',
         complete:      () => {
-          if (this.health <= 10) {
+          if (this.health <= constants.RABBIT_MIN_HEALTH) {
             this.destroy();
           }
         }

@@ -4,6 +4,7 @@ import Field            from '@snake/Field';
 import Bonus            from '@snake/Bonus';
 import Player           from '@snake/Player';
 import {randomLauncher} from '@/js/helpers';
+import constants        from '@/js/constants';
 
 
 export default class Game {
@@ -13,8 +14,10 @@ export default class Game {
     this.sound     = new Sound();
     
     this.players    = [];
-    this.difficulty = 7;
+    this.difficulty = constants.DEFAULT_DIFFICULTY;
     this.state      = null;
+    
+    this.results = null;
   }
   
   init() {
@@ -23,7 +26,11 @@ export default class Game {
   }
   
   start() {
-    //this.sound.play('music');
+    if (!this.state) {
+      this.field.spewRabbit();
+    }
+    
+    this.sound.play('music');
     this.state = 'play';
     this.field.draw();
     
@@ -46,7 +53,7 @@ export default class Game {
       }
       
       this.field.draw();
-    }, 33);
+    }, constants.DRAW_INTERVAL);
     
     randomLauncher(() => {
       if (this.state !== 'play') {
@@ -75,6 +82,10 @@ export default class Game {
   
   end() {
     this.state = 'end';
+    this.sound.stop('music');
+    this.setGameResults();
+    this.updateAchievements();
+    this.interface.openEndMenu();
   }
   
   togglePlayer(n) {
@@ -97,10 +108,58 @@ export default class Game {
   }
   
   getRabbitsFrequency() {
-    return [15000 / this.difficulty, 25000 / this.difficulty];
+    return [1000, 3000];
   }
   
   getBonusFrequency() {
-    return [40000 / this.difficulty, 70000 / this.difficulty];
+    return [100000 / this.difficulty, 200000 / this.difficulty];
+  }
+  
+  updateAchievements() {
+    const achievements = JSON.parse(window.localStorage.getItem('achievements')) || [];
+    
+    for (let player of this.players) {
+      const score = Math.round(player.score);
+      
+      if (score > 0) {
+        achievements.push(score);
+      }
+    }
+    
+    window.localStorage.setItem('achievements', JSON.stringify(achievements));
+  }
+  
+  setGameResults() {
+    const achievements = JSON.parse(window.localStorage.getItem('achievements')) || [];
+    const topList      = [];
+    const results      = {};
+    
+    for (let i = 0; i < achievements.length; i++) {
+      topList.push({
+        score:       achievements[i],
+        currentGame: false,
+        playerID:    null,
+      });
+    }
+    
+    for (let player of this.players) {
+      const score = Math.round(player.score);
+      
+      topList.push({
+        score:       score,
+        currentGame: true,
+        playerID:    player.id,
+      });
+    }
+    
+    topList.sort((a, b) => b.score - a.score);
+    
+    for (let i = 0; i < topList.length; i++) {
+      if (topList[i].currentGame || i < 3) {
+        results[i + 1] = topList[i];
+      }
+    }
+    
+    this.results = results;
   }
 }

@@ -58,15 +58,87 @@
       </div>
     </div>
     <div class="game" id="game">
-      <div class="field-wrap">
+      <div class="game-main-wrap">
         <div class="players-wrap" id="players-wrap"></div>
-        <div class="field" id="field"></div>
+        <div class="field-wrap">
+          <div class="field" id="field"></div>
+          <div class="pause-menu" id="pause-menu">
+            <div class="title">pause</div>
+            <div class="example-box">
+              <div class="example-title">Rabbit ( snake's food )</div>
+              <div class="example-row">
+                <div class="example rabbit-1"></div>
+                <div class="example rabbit-2"></div>
+                <div class="example rabbit-3"></div>
+                <div class="example rabbit-4"></div>
+                <div class="example rabbit-5"></div>
+              </div>
+            </div>
+            <div class="example-box">
+              <div class="example-title">Score increase ( x2 - x6 )</div>
+              <div class="example-row">
+                <div class="example bonus-score-1"></div>
+                <div class="example bonus-score-2"></div>
+                <div class="example bonus-score-3"></div>
+                <div class="example bonus-score-4"></div>
+                <div class="example bonus-score-5"></div>
+              </div>
+            </div>
+            <div class="example-box">
+              <div class="example-title">Cut snake's tail</div>
+              <div class="example-row">
+                <div class="example bonus-cut-1"></div>
+                <div class="example bonus-cut-2"></div>
+                <div class="example bonus-cut-3"></div>
+                <div class="example bonus-cut-4"></div>
+                <div class="example bonus-cut-5"></div>
+              </div>
+            </div>
+            <div class="example-box">
+              <div class="example-title">Snake transparency ( god mode )</div>
+              <div class="example-row">
+                <div class="example bonus-transparency-1"></div>
+                <div class="example bonus-transparency-2"></div>
+                <div class="example bonus-transparency-3"></div>
+                <div class="example bonus-transparency-4"></div>
+                <div class="example bonus-transparency-5"></div>
+              </div>
+            </div>
+            <div class="example-box">
+              <div class="example-title">Freezing snake ( bad bonus )</div>
+              <div class="example-row">
+                <div class="example bonus-freeze-1"></div>
+                <div class="example bonus-freeze-2"></div>
+                <div class="example bonus-freeze-3"></div>
+                <div class="example bonus-freeze-4"></div>
+                <div class="example bonus-freeze-5"></div>
+              </div>
+            </div>
+          </div>
+          <div class="end-menu" id="end-menu">
+            <div class="buttons-wrap">
+              <div class="end-button" id="go-to-menu"><i class='bx bx-log-out'></i></div>
+              <div class="end-button" id="play-again"><i class='bx bx-revision'></i></div>
+            </div>
+            <div class="top-list-wrap" id="top-list-wrap"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="pause-menu" id="pause-menu"></div>
     <div class="screen-warning" id="screen-warning">
       Экран данного устройства слишком мал. Для игры необходимо устройство с разрешением не менее
       1000 x 800.
+    </div>
+    <div class="fixed-buttons-wrap">
+      <div class="fixed-button active" id="music-button">
+        <i class='bx bxs-music'></i>
+      </div>
+      <div class="fixed-button active" id="sound-button">
+        <i class='bx bxs-bell'></i>
+      </div>
+      <a href="https://github.com/spacenear/snake" target="_blank" class="fixed-button active">
+        <i class='bx bxl-github'></i>
+      </a>
     </div>
   </div>
 </body>

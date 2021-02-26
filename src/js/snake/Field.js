@@ -1,13 +1,14 @@
 import Rabbit        from '@snake/Rabbit';
 import Bonus         from '@snake/./Bonus';
 import {key, random} from '@/js/helpers';
+import constants     from '@/js/constants';
 
 export default class Field {
   constructor(gameClass) {
     this.gameClass = gameClass;
     this.cells     = {};
-    this.width     = 40;
-    this.height    = 25;
+    this.width     = constants.FIELD_WIDTH;
+    this.height    = constants.FIELD_HEIGHT;
   }
   
   init() {
@@ -34,7 +35,6 @@ export default class Field {
           snake:  null,
           bonus:  null,
           rabbit: null,
-          angle:  0,
         };
       }
       
@@ -79,7 +79,7 @@ export default class Field {
       for (let bonusKey in player.bonuses) {
         const type    = player.bonuses[bonusKey].type;
         const level   = player.bonuses[bonusKey].level;
-        const counter = player.bonuses[bonusKey].lifeTimerCounter;
+        const counter = player.bonuses[bonusKey].activeTime;
         
         const bonus = document.createElement('div');
         bonus.classList.add('bonus', 'bonus-' + type + '-' + level);
@@ -133,6 +133,18 @@ export default class Field {
   }
   
   spewRabbit() {
+    let rabbitsOnField = 0;
+    
+    for (let cellKey in this.cells) {
+      if (this.cells[cellKey].rabbit) {
+        rabbitsOnField++;
+        
+        if (rabbitsOnField > this.gameClass.players.length + 1) {
+          return;
+        }
+      }
+    }
+    
     let level    = this.chooseLevel(1, 5, 100);
     const cell   = this.getFreeCell();
     const rabbit = new Rabbit(level, cell);
@@ -141,12 +153,24 @@ export default class Field {
   }
   
   spewBonus() {
+    let bonusesOnField = 0;
+    
+    for (let cellKey in this.cells) {
+      if (this.cells[cellKey].bonus) {
+        bonusesOnField++;
+        
+        if (bonusesOnField >= this.gameClass.players.length) {
+          return;
+        }
+      }
+    }
+    
     const getBonusName = () => {
       const bonusTypes = [
-        {name: 'freeze', range: [1, 1]},
-        {name: 'transparency', range: [2, 10]},
-        {name: 'cut', range: [1, 20]},
-        {name: 'score', range: [21, 100]},
+        {name: 'freeze', range: [1, 3]},
+        {name: 'cut', range: [4, 5]},
+        {name: 'transparency', range: [6, 15]},
+        {name: 'score', range: [31, 100]},
       ];
       
       let name = null;
@@ -164,7 +188,7 @@ export default class Field {
     const cell = this.getFreeCell();
     
     let level   = this.chooseLevel(1, 5, 50);
-    const bonus = new Bonus(getBonusName(), level, cell);
+    const bonus = new Bonus(this.gameClass, getBonusName(), level, cell);
     
     cell.bonus = bonus;
   }
@@ -190,5 +214,21 @@ export default class Field {
     }
     
     return this.cells[freeCellsKeys[random(0, freeCellsKeys.length - 1)]];
+  }
+  
+  clean() {
+    for (let player of this.gameClass.players) {
+      player.snake.destroy();
+    }
+    
+    for (let cellKey in this.cells) {
+      if (this.cells[cellKey].bonus) {
+        this.cells[cellKey].bonus.removeFromField();
+      }
+      
+      if (this.cells[cellKey].rabbit) {
+        this.cells[cellKey].rabbit.destroy();
+      }
+    }
   }
 }

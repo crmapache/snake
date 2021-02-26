@@ -130,7 +130,15 @@ export default class Snake {
     const cleanOldLastCell = snakeAte => {
       const keyToClean = key(this.cells[this.cells.length - 1].x, this.cells[this.cells.length - 1].y);
       
-      if (this.gameClass.field.cells[keyToClean] && !snakeAte) {
+      let transparentCell = false;
+      
+      for (let i = 0; i < this.cells.length - 1; i++) {
+        if (key(this.cells[i].x, this.cells[i].y) === keyToClean) {
+          transparentCell = true;
+        }
+      }
+      
+      if (this.gameClass.field.cells[keyToClean] && !snakeAte && !transparentCell) {
         this.gameClass.field.cells[keyToClean].snake = null;
       }
     };
@@ -139,10 +147,17 @@ export default class Snake {
       this.cells = cells;
     };
     
-    const isSnakesCollided = (x, y) => {
+    const isSnakesCollided = (x, y, snakeAte) => {
       const snake = this.gameClass.field.cells[key(x, y)].snake;
       
-      if (!snake || this.transparency || (snake && snake.transparency)) {
+      const lastSnakeCell = this.cells[this.cells.length - 1];
+      
+      if (
+          !snake ||
+          this.transparency ||
+          (snake && snake.transparency) ||
+          (key(x, y) === key(lastSnakeCell.x, lastSnakeCell.y) && !snakeAte)
+      ) {
         return false;
       }
       
@@ -194,9 +209,9 @@ export default class Snake {
     }
     
     const [x, y]          = defineHeadPositions();
-    const snakesCollision = isSnakesCollided(x, y);
     const snakeAte        = isRabbitEaten(x, y);
     const snakeGotBonus   = isSnakeGotBonus(x, y);
+    const snakesCollision = isSnakesCollided(x, y, snakeAte);
     
     const newSnakeCells = defineNewSnakeCells(x, y, snakeAte);
     updateFieldCells(newSnakeCells);

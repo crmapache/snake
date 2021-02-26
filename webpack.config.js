@@ -99,5 +99,6 @@ module.exports = {
         use:  ['file-loader'],
       }
     ],
-  }
+  },
+  devtool:      'source-map',
 };

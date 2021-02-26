@@ -1,57 +1,65 @@
 import anime      from 'animejs';
 import {percents} from '@/js/helpers';
+import constants  from '@/js/constants';
 
 export default class Bonus {
-  constructor(type, level, cell) {
-    this.type  = type;
-    this.level = level;
-    this.cell  = cell;
+  constructor(gameClass, type, level, cell) {
+    this.gameClass = gameClass;
+    this.type      = type;
+    this.level     = level;
+    this.cell      = cell;
     
-    this.health = 99.999999;
+    this.fieldTime  = constants.BONUS_FIELD_TIME + (this.level * 2);
+    this.activeTime = constants.BONUS_ACTIVE_TIME * this.level;
     
-    this.healthInterval = setInterval(() => {
-      anime.remove(this);
-      
-      anime({
-        targets:  this,
-        health:   this.health - percents(this.health, 10),
-        duration: 700,
-        easing:   'easeOutExpo',
-        complete: () => {
-          if (this.health <= 10) {
-            this.removeFromField();
-          }
-        }
-      });
-    }, 900);
+    this.fieldInterval  = null;
+    this.activeInterval = null;
     
-    this.lifeInterval     = null;
-    this.lifeTimerCounter = 10 * this.level;
+    this.activeTickHandler = null;
+    this.deactivateHandler = null;
     
-    this.tickHandler = null;
-    this.endHandler  = null;
+    this.startFieldTimer();
   }
   
-  get() {
-    this.lifeInterval = setInterval(() => {
-      this.lifeTimerCounter--;
-      if (typeof this.tickHandler === 'function') {
-        this.tickHandler();
-      }
+  startFieldTimer() {
+    this.fieldInterval = setInterval(() => {
+      this.fieldTime--;
       
-      if (this.lifeTimerCounter < 0) {
-        clearInterval(this.lifeInterval);
-        this.endHandler();
+      if (this.fieldTime < 1) {
+        this.removeFromField();
       }
     }, 1000);
   }
   
-  stop() {
-    clearInterval(this.lifeInterval);
+  activate() {
+    this.gameClass.sound.play('getBonus');
+    
+    this.activeInterval = setInterval(() => {
+      if (this.gameClass.state === 'play') {
+        this.activeTime--;
+        
+        if (typeof this.activeTickHandler === 'function') {
+          this.activeTickHandler();
+        }
+      }
+      
+      if (this.activeTime < 1) {
+        this.gameClass.sound.play('bonusEnd');
+        this.deactivate();
+      }
+    }, 1000);
+  }
+  
+  deactivate() {
+    clearInterval(this.activeInterval);
+    
+    if (typeof this.deactivateHandler === 'function') {
+      this.deactivateHandler();
+    }
   }
   
   removeFromField() {
-    clearInterval(this.healthInterval);
+    clearInterval(this.fieldInterval);
     this.cell.bonus = null;
   }
 }

@@ -1,6 +1,7 @@
 import Snake         from '@snake/Snake';
 import {random, key} from '@/js/helpers';
 import anime         from 'animejs';
+import constants     from '@/js/constants';
 
 export default class Player {
   constructor(gameClass, id) {
@@ -8,6 +9,7 @@ export default class Player {
     this.id        = id;
     
     this.wrapEl        = null;
+    this.playerEl      = null;
     this.scoreEl       = null;
     this.picksEl       = null;
     this.bonusesWrapEl = null;
@@ -17,14 +19,9 @@ export default class Player {
     
     this.bonuses = {};
     
-    this.controlKeys = ({
-      1: [87, 68, 83, 65],
-      2: [85, 75, 74, 72],
-      3: [38, 39, 40, 37]
-    })[id];
+    this.controlKeys = constants.PLAYERS_KEYCODES[id];
     
-    this.snake = new Snake(this);
-    this.gameClass.field.setSnake(this.snake);
+    this.createSnake();
   }
   
   get score() {
@@ -66,8 +63,8 @@ export default class Player {
   init() {
     this.wrapEl = document.querySelector('#players-wrap');
     
-    const player = document.createElement('div');
-    player.classList.add('player', 'player-' + this.id);
+    this.playerEl = document.createElement('div');
+    this.playerEl.classList.add('player', 'player-' + this.id);
     
     this.scoreEl = document.createElement('div');
     this.scoreEl.classList.add('score');
@@ -80,60 +77,53 @@ export default class Player {
     this.bonusesWrapEl = document.createElement('div');
     this.bonusesWrapEl.classList.add('bonuses-wrap');
     
-    player.append(this.scoreEl);
-    player.append(this.picksEl);
-    player.append(this.bonusesWrapEl);
+    this.playerEl.append(this.scoreEl);
+    this.playerEl.append(this.picksEl);
+    this.playerEl.append(this.bonusesWrapEl);
     
-    this.wrapEl.append(player);
+    this.wrapEl.append(this.playerEl);
   }
   
   increaceScore(score) {
     const scoreBonus = this.bonuses['score'];
-    console.log(score);
+    
+    score *= this.gameClass.difficulty;
+    
     if (scoreBonus) {
       score *= scoreBonus.level + 1;
     }
-    console.log(score);
+    
     this.score += score;
     this.picks++;
   }
   
   addBonus(bonus) {
-    const transparencyBonusEndHandler = () => {
-      this.snake.transparency = false;
-    };
-    
     if (
         !this.bonuses[bonus.type] ||
         (this.bonuses[bonus.type] && this.bonuses[bonus.type].level <= bonus.level)
     ) {
-      bonus.get();
-      this.gameClass.sound.play('getBonus');
-      
       if (this.bonuses[bonus.type]) {
-        if (bonus.type === 'transparency') {
-          transparencyBonusEndHandler();
-        }
-        
-        this.bonuses[bonus.type].stop();
+        this.bonuses[bonus.type].deactivate();
       }
       
-      bonus.endHandler = () => {
-        this.gameClass.sound.play('bonusEnd');
-        
-        if (bonus.type === 'transparency') {
-          transparencyBonusEndHandler();
+      bonus.deactivateHandler = () => {
+        if (this.gameClass.state === 'play') {
+          if (bonus.type === 'transparency') {
+            this.snake.transparency = false;
+          }
+          
+          delete this.bonuses[bonus.type];
         }
-        
-        delete this.bonuses[bonus.type];
       };
+      
+      bonus.activate();
       
       if (bonus.type === 'transparency') {
         this.snake.transparency = true;
       }
       
       if (bonus.type === 'cut') {
-        bonus.tickHandler = () => {
+        bonus.activeTickHandler = () => {
           if (this.snake.cells.length > this.snake.initialSize) {
             const lastSnakeCell = this.snake.cells.pop();
             const fieldCell     = this.gameClass.field.cells[key(lastSnakeCell.x, lastSnakeCell.y)];
@@ -147,10 +137,28 @@ export default class Player {
       
       this.bonuses[bonus.type] = bonus;
     }
+    
+    if (this.bonuses[bonus.type] && this.bonuses[bonus.type].level > bonus.level) {
+      this.gameClass.sound.play('bonusError');
+    }
+  }
+  
+  cleanBonuses() {
+    for(let bonusKey in this.bonuses) {
+      this.bonuses[bonusKey].deactivate();
+    }
+  
+    this.bonuses = {};
+  }
+  
+  createSnake() {
+    this.snake = new Snake(this);
+    this.gameClass.field.setSnake(this.snake);
   }
   
   destroy() {
-    this.wrapEl.remove();
+    this.cleanBonuses();
+    this.playerEl.remove();
     this.snake.destroy();
   }
 }

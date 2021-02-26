@@ -9,6 +9,7 @@ body {
   height:     100vh;
   background: #252525;
   padding:    20px;
+  position:   relative;
 
   .menu {
     @include elevation(7);
@@ -260,7 +261,7 @@ body {
     @include absolute();
     @include flex();
 
-    .field-wrap {
+    .game-main-wrap {
       @include flex();
       @include elevation(7);
       width:            900px;
@@ -336,51 +337,186 @@ body {
         }
       }
 
-      .field {
-        box-shadow: 0 0 2px rgba(255, 255, 255, .3);
+      .field-wrap {
+        position: relative;
 
-        .row {
+        .field {
+          box-shadow: 0 0 2px rgba(255, 255, 255, .3);
+
+          .row {
+            @include flex();
+
+            .cell {
+              width:      20px;
+              height:     20px;
+              box-shadow: inset 0 0 2px rgba(255, 255, 255, .15);
+              position:   relative;
+
+              .cell-inner {
+                @include flex();
+                position:  absolute;
+                top:       3px;
+                left:      3px;
+                right:     3px;
+                bottom:    3px;
+                font-size: 8px;
+                color:     #000;
+
+                @each $i, $color in $players {
+                  &.snake-#{$i} {
+                    background-color: $color;
+
+                    &.transparent {
+                      background-color: transparentize($color, .5);
+                    }
+                  }
+                }
+
+                @for $i from 1 through 5 {
+                  &.rabbit-#{$i} {
+                    background-color: darken($rabbit, 10% * $i);
+                  }
+                }
+
+                @each $key, $color in $bonuses {
+                  @for $i from 1 through 5 {
+                    &.bonus-#{$key}-#{$i} {
+                      background-color: darken($color, 10% * $i);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .pause-menu {
           @include flex();
+          @include absolute();
+          flex-direction:   column;
+          background-color: rgba(0, 0, 0, .95);
+          padding:          20px;
 
-          .cell {
-            width:      20px;
-            height:     20px;
-            box-shadow: inset 0 0 2px rgba(255, 255, 255, .15);
-            position:   relative;
+          .title {
+            text-transform: uppercase;
+            font-size:      26px;
+            color:          $text;
+            text-align:     center;
+            margin:         20px 0;
+          }
 
-            .cell-inner {
+          .example-box {
+            margin-bottom: 20px;
+
+            .example-title {
+              font-size:     14px;
+              color:         $text;
+              text-align:    center;
+              margin-bottom: 10px;
+            }
+
+            .example-row {
               @include flex();
-              position:  absolute;
-              top:       3px;
-              left:      3px;
-              right:     3px;
-              bottom:    3px;
-              font-size: 8px;
-              color:     #000;
+
+              .example {
+                @include flex();
+                width:     14px;
+                height:    14px;
+                margin:    0 2.5px;
+                font-size: 8px;
+                color:     #000;
+
+                @for $i from 1 through 5 {
+                  &.rabbit-#{$i} {
+                    background-color: darken($rabbit, 10% * $i);
+                  }
+                }
+
+                @each $key, $color in $bonuses {
+                  @for $i from 1 through 5 {
+                    &.bonus-#{$key}-#{$i} {
+                      background-color: darken($color, 10% * $i);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .end-menu {
+          @include flex();
+          @include absolute();
+          flex-direction:   column;
+          background-color: rgba(0, 0, 0, .95);
+          padding:          20px;
+
+          .buttons-wrap {
+            @include flex();
+            margin: 40px 0 20px 0;
+
+            .end-button {
+              text-transform:   uppercase;
+              padding:          6px 15px;
+              text-align:       center;
+              display:          inline-block;
+              background-color: $primary;
+              color:            #fff;
+              border-radius:    4px;
+              user-select:      none;
+              transition:       background-color .2s,;
+              font-size:        18px;
+              margin:           0 7.5px;
+
+              &:hover {
+                cursor:           pointer;
+                background-color: darken($primary, 4%);
+              }
+
+              &:active {
+                background-color: darken($primary, 7%);
+              }
+
+              i {
+                display: block;
+              }
+            }
+          }
+
+          .top-list-wrap {
+            @include flex();
+            flex-direction: column;
+
+            .top-item {
+              @include flex();
+              flex-direction: column;
+              margin-bottom:  10px;
+
+              .item-title {
+                font-size:     10px;
+                color:         transparentize($text, .5);
+                margin-bottom: 2px;
+              }
+
+              .item-score-value {
+                font-size: 14px;
+                color:     $text;
+              }
 
               @each $i, $color in $players {
-                &.snake-#{$i} {
-                  background-color: $color;
-
-                  &.transparent {
-                    background-color: transparentize($color, .5);
+                &.player-#{$i} {
+                  .item-score-value {
+                    color: $color;
                   }
                 }
               }
+            }
 
-              @for $i from 1 through 5 {
-                &.rabbit-#{$i} {
-                  background-color: darken($rabbit, 10% * $i);
-                }
-              }
-
-              @each $key, $color in $bonuses {
-                @for $i from 1 through 5 {
-                  &.bonus-#{$key}-#{$i} {
-                    background-color: darken($color, 10% * $i);
-                  }
-                }
-              }
+            .top-list-divider {
+              font-size:     14px;
+              margin-bottom: 10px;
+              margin-top:    -9px;
+              color:         $text;
             }
           }
         }
@@ -403,7 +539,39 @@ body {
     z-index:          100;
   }
 
-  .pause-menu {
+  .fixed-buttons-wrap {
+    @include flex();
+    position: fixed;
+    top:      0;
+    right:    0;
+    height:   60px;
+    padding:  0 15px;
 
+    .fixed-button {
+      @include flex();
+      @include elevation(4);
+      width:            30px;
+      height:           30px;
+      border-radius:    50%;
+      font-size:        14px;
+      color:            $text;
+      background-color: #151515;
+      transition:       color .2s;
+      margin:           0 5px;
+      text-decoration:  none;
+
+      &:hover {
+        cursor:           pointer;
+        background-color: darken(#151515, 4%);
+      }
+
+      &:active {
+        background-color: darken(#151515, 6%);
+      }
+
+      &.active {
+        color: #fff;
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
-export function random(from, to) {
-  return Math.floor((Math.random() * to) + from);
+export function random(min, max) {
+  return Math.floor(min + Math.random() * (max + 1 - min));
 }
 
 export function key(x, y) {
@@ -7,7 +7,7 @@ export function key(x, y) {
 }
 
 export function randomLauncher(fn, intervalFrom, intervalTo) {
-  setTimeout(function() {
+  setTimeout(function () {
     if (fn()) {
       return randomLauncher(fn, intervalFrom, intervalTo);
     }
