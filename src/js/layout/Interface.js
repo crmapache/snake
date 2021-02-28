@@ -37,7 +37,6 @@ export default class Interface {
   constructor(gameClass) {
     this.gameClass = gameClass;
     
-    this.screenWarning = new Section('#screen-warning');
     this.menu          = new Section('#menu');
     this.game          = new Section('#game');
     this.pauseMenu     = new Section('#pause-menu');
@@ -47,13 +46,10 @@ export default class Interface {
     
     this.game.addToDeactivate(this.menu);
     
-    this.checkScreen = this.checkScreen.bind(this);
-    
     this.playersChoosed = false;
   }
   
   init() {
-    this.checkScreen();
     this.menu.activate();
     
     const shoosePlayer1   = document.querySelector('#player-1');
@@ -123,8 +119,6 @@ export default class Interface {
     
     this.createChooseDifficultyButtons();
     
-    window.addEventListener('resize', this.checkScreen);
-    
     window.addEventListener('keydown', e => {
       if (e.keyCode === constants.SPACE_KEYCODE) {
         if (this.gameClass.state === 'play') {
@@ -139,14 +133,6 @@ export default class Interface {
     
     this.initMusicButton();
     this.initSoundButton();
-  }
-  
-  checkScreen() {
-    if (window.innerWidth < 1000 || window.innerHeight < 700) {
-      this.screenWarning.activate();
-    } else {
-      this.screenWarning.deactivate();
-    }
   }
   
   toMenu() {
@@ -189,14 +175,6 @@ export default class Interface {
         topItem.append(itemTitle);
         topItem.append(itemScoreValue);
         topListWrap.append(topItem);
-        
-        if (i === 3 && results.length > 4) {
-          const topListDivider = document.createElement('div');
-          topListDivider.classList.add('top-list-divider');
-          topListDivider.innerText = '...';
-          
-          topListWrap.append(topListDivider);
-        }
       }
     }
   }

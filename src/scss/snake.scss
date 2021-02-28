@@ -511,32 +511,10 @@ body {
                 }
               }
             }
-
-            .top-list-divider {
-              font-size:     14px;
-              margin-bottom: 10px;
-              margin-top:    -9px;
-              color:         $text;
-            }
           }
         }
       }
     }
-  }
-
-  .screen-warning {
-    @include flex();
-    position:         fixed;
-    top:              0;
-    left:             0;
-    bottom:           0;
-    right:            0;
-    font-size:        20px;
-    padding:          20px;
-    color:            $text;
-    text-align:       center;
-    background-color: rgba(0, 0, 0, .95);
-    z-index:          100;
   }
 
   .fixed-buttons-wrap {
